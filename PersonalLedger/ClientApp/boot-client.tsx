@@ -6,9 +6,11 @@ import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 import { createBrowserHistory } from 'history';
+import { Layout } from './components/Layout';
 import configureStore from './configureStore';
 import { ApplicationState }  from './store';
 import * as RoutesModule from './routes';
+let layoutAndRoutes = RoutesModule.layoutAndRoutes;
 let routes = RoutesModule.routes;
 
 // Create browser history to use in the Redux store
@@ -19,13 +21,27 @@ const history = createBrowserHistory({ basename: baseUrl });
 const initialState = (window as any).initialReduxState as ApplicationState;
 const store = configureStore(history, initialState);
 
+// this is the original scaffolded version, which combined layout and routes into one object
+//function renderApp() {
+//    // This code starts up the React app when it runs in a browser.
+//    ReactDOM.render(
+//        <AppContainer>
+//            <Provider store={ store }>
+//                <ConnectedRouter history={history} children={layoutAndRoutes} />
+//            </Provider>
+//        </AppContainer>,
+//        document.getElementById('react-app')
+//    );
+//}
+
 function renderApp() {
-    // This code starts up the React app when it runs in a browser. It sets up the routing configuration
-    // and injects the app into a DOM element.
+    // This code starts up the React app when it runs in a browser.
     ReactDOM.render(
         <AppContainer>
-            <Provider store={ store }>
-                <ConnectedRouter history={ history } children={ routes } />
+            <Provider store={store}>
+                <ConnectedRouter history={history}>
+                    <Layout children={routes} />
+                </ConnectedRouter>
             </Provider>
         </AppContainer>,
         document.getElementById('react-app')
@@ -37,6 +53,7 @@ renderApp();
 // Allow Hot Module Replacement
 if (module.hot) {
     module.hot.accept('./routes', () => {
+        layoutAndRoutes = require<typeof RoutesModule>('./routes').layoutAndRoutes;
         routes = require<typeof RoutesModule>('./routes').routes;
         renderApp();
     });

@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.2" />
+    <PackageReference Include="nlog.config" Version="4.4.12" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,6 +20,30 @@
   <ItemGroup>
     <!-- Files not to publish (note that the 'dist' subfolders are re-added below) -->
     <Content Remove="ClientApp\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\components\Admin.tsx" />
+    <None Remove="ClientApp\components\AdminAccounts.tsx" />
+    <None Remove="ClientApp\components\AdminCategories.tsx" />
+    <None Remove="ClientApp\components\AdminTransactions.tsx" />
+    <None Remove="ClientApp\components\AdminUsers.tsx" />
+    <None Remove="ClientApp\components\Categories.tsx" />
+    <None Remove="ClientApp\store\Accounts.ts" />
+    <None Remove="ClientApp\store\Transactions.ts" />
+    <None Remove="ClientApp\store\Users.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\components\Admin.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\AdminAccounts.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\AdminCategories.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\AdminTransactions.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\AdminUsers.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\Categories.tsx" />
+    <TypeScriptCompile Include="ClientApp\store\Accounts.ts" />
+    <TypeScriptCompile Include="ClientApp\store\Users.ts" />
+    <TypeScriptCompile Include="ClientApp\store\Transactions.ts" />
   </ItemGroup>
 
   <Target Name="DebugRunWebpack" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('wwwroot\dist') ">

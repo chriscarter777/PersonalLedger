@@ -18,18 +18,28 @@ export class NavMenu extends React.Component<{}, {}> {
                 <div className='navbar-collapse collapse'>
                     <ul className='nav navbar-nav'>
                         <li>
-                            <NavLink exact to={ '/' } activeClassName='active'>
+                            <NavLink exact to={'/'} activeClassName='active'>
                                 <span className='glyphicon glyphicon-home'></span> Home
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink to={ '/counter' } activeClassName='active'>
-                                <span className='glyphicon glyphicon-education'></span> Counter
+                            <NavLink to={ '/accounts' } activeClassName='active'>
+                                <span className='glyphicon glyphicon-credit-card'></span> Accounts
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink to={ '/fetchdata' } activeClassName='active'>
-                                <span className='glyphicon glyphicon-th-list'></span> Fetch data
+                            <NavLink to={ '/categories' } activeClassName='active'>
+                                <span className='glyphicon glyphicon-folder-open'></span> Categories
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink to={ '/ledger' } activeClassName='active'>
+                                <span className='glyphicon glyphicon-list-alt'></span> Ledger
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink exact to={'/admin'} activeClassName='active'>
+                                <span className='glyphicon glyphicon-user'></span> Admin
                             </NavLink>
                         </li>
                     </ul>

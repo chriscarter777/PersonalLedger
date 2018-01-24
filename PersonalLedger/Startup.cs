@@ -5,8 +5,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using PersonalLedger.Data;
 
 namespace PersonalLedger
 {
@@ -22,11 +25,13 @@ namespace PersonalLedger
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<DataContext>(options => options.UseSqlServer(Configuration.GetConnectionString("LedgerDatabase")));
+            services.AddTransient<IDataRepository, DataRepository>();
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -55,5 +60,5 @@ namespace PersonalLedger
                     defaults: new { controller = "Home", action = "Index" });
             });
         }
-    }
-}
+    }  //Startup
+}  //namespace
