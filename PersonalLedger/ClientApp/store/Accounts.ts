@@ -29,15 +29,14 @@ interface ReceiveAccountsAction { type: 'RECEIVE_ACCOUNTS'; accounts: Account[] 
 interface AddAccountAction { type: 'ADD_ACCOUNT'; account: Account }
 interface DeleteAccountAction { type: 'DELETE_ACCOUNT'; id: number }
 interface UpdateAccountAction { type: 'UPDATE_ACCOUNT'; account: Account }
-interface UpdateDefaultsAction { type: 'UPDATE_ACCOUNT_DEFAULTS'; id: number; defaultAcct: number; defaultAmt: number; defaultCat: number }
 
-type KnownAction = RequestAccountsAction | ReceiveAccountsAction | AddAccountAction | DeleteAccountAction | UpdateAccountAction | UpdateDefaultsAction;
+type KnownAction = RequestAccountsAction | ReceiveAccountsAction | AddAccountAction | DeleteAccountAction | UpdateAccountAction;
 
 export const actionCreators = {
     requestAccounts: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
         // Only load data if it's not already loading
         if (getState().accounts.isLoading === false) {
-            let fetchTask = fetch('api/Accounts/AccountsAsync')
+            let fetchTask = fetch('api/Accounts/AccountsAsync', { credentials: 'same-origin' })
                 .then(response => response.json() as Promise<Account[]>)
                 .then(data => { dispatch({ type: 'RECEIVE_ACCOUNTS', accounts: data });
                 });
@@ -49,7 +48,6 @@ export const actionCreators = {
     addAccount: (account: Account) => <AddAccountAction>{ type: 'ADD_ACCOUNT', account: account },
     deleteAccount: (userId: number) => <DeleteAccountAction>{ type: 'DELETE_ACCOUNT', id: userId },
     updateAccount: (account: Account) => <UpdateAccountAction>{ type: 'UPDATE_ACCOUNT', account: account },
-    updateDefaults: (id: number, defaultAcct: number, defaultAmt: number, defaultCat: number) => <UpdateDefaultsAction>{ type: 'UPDATE_ACCOUNT_DEFAULTS', id: id, defaultAcct: defaultAcct, defaultAmt: defaultAmt, defaultCat: defaultCat }
 };
 
 export const reducer: Reducer<AccountState> = (state: AccountState, incomingAction: Action) => {
@@ -64,8 +62,6 @@ export const reducer: Reducer<AccountState> = (state: AccountState, incomingActi
         case 'DELETE_ACCOUNT':
             return { isLoading: state.isLoading, accounts: state.accounts };
         case 'UPDATE_ACCOUNT':
-            return { isLoading: state.isLoading, accounts: state.accounts };
-        case 'UPDATE_ACCOUNT_DEFAULTS':
             return { isLoading: state.isLoading, accounts: state.accounts };
         default:
             // The following line guarantees that every action has been covered by a case

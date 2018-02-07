@@ -244,6 +244,7 @@ select {
 
 .unstyledList{
     list-style:none;
+    -webkit-padding-start:0;
 }
 /*#endregion*/
 /*#region Buttons*/
@@ -308,6 +309,11 @@ body {
     padding-right: 15px;
 }
 
+.content-area {
+    margin-top: 50px;
+}
+
+
 footer {
     padding: 5px;
     background: #cde6cd;
@@ -335,6 +341,7 @@ h2 {
 }
 
 h3 {
+    text-align: center;
     font-size: 36px;
 }
 
@@ -500,8 +507,19 @@ td {
 /*#region Categories*/
 /*#endregion*/
 /*#region Home*/
+.lemonlime {
+    font-family: Garamond;
+    color: green;
+    text-shadow: 0 0 4px yellow;
+}
+
+.lime {
+    font-family: Garamond;
+    color: green;
+}
+
 .mainTitle {
-    margin-top: 300px;
+    margin-top: 15%;
     margin-left: calc(50% - 300px);
 }
 
@@ -514,10 +532,32 @@ td {
     -webkit-text-stroke: 1px yellowgreen;
     text-shadow: 0 0 8px gold;
     z-index: 5;
-    animation: fromUpperLeft 0.5s ease-out;
 }
 
 .mainTitle-main {
+    position: relative;
+    top: -74px;
+    left: 12px;
+    font-family: Garamond;
+    font-size: 100px;
+    color: green;
+    -webkit-text-stroke: 1px goldenrod;
+    text-shadow: 0 0 40px yellow;
+    z-index: 1;
+}
+.mainTitle-sub-fly {
+    position: relative;
+    font-size: 40px;
+    font-family: Garamond;
+    font-style: italic;
+    color: darkgreen;
+    -webkit-text-stroke: 1px yellowgreen;
+    text-shadow: 0 0 8px gold;
+    z-index: 5;
+    animation: fromUpperLeft 0.5s ease-out;
+}
+
+.mainTitle-main-fly {
     position: relative;
     top: -74px;
     left: 12px;
@@ -557,6 +597,15 @@ td {
     font-style: italic;
     color: green;
     text-shadow: 0 0 4px yellow;
+}
+
+.deleteLink{
+    padding-left:10px;
+    border:none;
+}
+
+.deleteLink>a:hover{
+    text-decoration:none;
 }
 
 /*#endregion*/
@@ -721,6 +770,17 @@ td {
     height: 120px;
 }
 
+th {
+    border: 1px solid gold;
+    text-align: center;
+    font-weight: bold;
+    padding: 0 8px 0 8px;
+    background: #f8f0b0;
+}
+
+td {
+    border: 1px solid lightgray;
+}
 /*#endregion*/
 
 

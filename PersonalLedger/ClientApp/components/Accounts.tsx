@@ -1,8 +1,11 @@
 import * as React from 'react';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import { Route, Link, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { ApplicationState }  from '../store';
+import { ApplicationState } from '../store';
 import * as AccountStore from '../store/Accounts';
+import { Account } from '../store/Accounts';
+import { AccountAdd } from './AccountAdd';
+import { AccountItem } from './AccountItem';
 
 type AccountsProps =
     AccountStore.AccountState
@@ -15,39 +18,42 @@ export class Accounts extends React.Component<AccountsProps, {}> {
         this.props.requestAccounts();
     }
 
-    //componentWillReceiveProps(nextProps: AccountsProps) {
-    //    // This method runs when incoming props (e.g., route params) change
-    //    this.props.requestAccounts();
-    //}
+    componentWillReceiveProps(nextProps: AccountsProps) {
+        // This method runs when incoming props (e.g., route params) change
+    }
 
     public render() {
-        console.log("-----------------------------------------------");
-        console.log("AccountsProps: " + JSON.stringify(this.props));
-        console.log("Accounts: " + JSON.stringify(this.props.accounts.length));
-        console.log("-----------------------------------------------");
-        var accountItems = this.props.accounts.map(function (item) {
-            return (
-                <li>
-                    {item.debit} : {item.id} : {item.name} : {item.institution} : {item.number} : {item.interest} : {item.limit}
-                </li>
-            );
-        });
-
         return <div>
-            <h1 className="captionlike">Accounts</h1>
-
-            <ul>
-                { accountItems }
-            </ul>
-
-            <button onClick={() => { this.props.addAccount(this.props.accounts[0]) }}>Add</button>
-            <button onClick={() => { this.props.deleteAccount(0) }}>Delete</button>
-            <button onClick={() => { this.props.updateAccount(this.props.accounts[0]) }}>Edit</button>
-            <button onClick={() => { this.props.updateDefaults(0,0,0,0) }}>Change Defaults</button>
-        </div>;
+                <table>
+                    <caption>Accounts</caption>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Type</th>
+                            <th>Name</th>
+                            <th>Institution</th>
+                            <th>Number</th>
+                            <th>Interest</th>
+                            <th>Limit</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {this.props.accounts.map((item, i) =>
+                        <AccountItem key={i} account={item} />
+                    )}
+                    </tbody>
+                </table>
+                <hr />
+                <Link to='/accountAdd'>Add</Link>
+                <hr />
+                <Route path='/accountAdd' component={AccountAdd} />
+            </div>;
     }
 }
 
 // Wire up the React component to the Redux store
 // Selects which state properties are merged into the component's props
 export default connect((state: ApplicationState) => state.accounts, AccountStore.actionCreators)(Accounts) as typeof Accounts;
+
+//                <Route path='/accountAdd' component={AccountAdd} />

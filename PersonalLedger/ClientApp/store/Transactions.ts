@@ -31,7 +31,7 @@ export const actionCreators = {
     requestTransactions: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
         // Only load data if it's not already loading
         if (getState().transactions.isLoading === false) {
-            let fetchTask = fetch('api/Transactions/TransactionsAsync')
+            let fetchTask = fetch('api/Transactions/TransactionsAsync', { credentials: 'same-origin' })
                 .then(response => response.json() as Promise<Transaction[]>)
                 .then(data => {
                     dispatch({ type: 'RECEIVE_TRANSACTIONS', transactions: data });

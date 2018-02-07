@@ -3,20 +3,27 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.Encodings.Web;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PersonalLedger.Models;
-using NLog;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace PersonalLedger.Data
 {
     public class DataRepository : IDataRepository
     {
         #region Fields
-        private readonly DataContext _context;
+        private readonly LedgerDbContext _context;
         private readonly HtmlEncoder _htmlEncoder;
-        private static Logger logger = LogManager.GetCurrentClassLogger();
-        private readonly int _user = 1;  //for development, always use user 1
+        private readonly ILogger _logger;
+        private readonly string _userName;
+        private readonly bool _userSI;
+        private readonly bool _userAdmin;
         private readonly List<Category> _defaultCategories = new List<Category>{
             //OTHER
             new Category
@@ -276,157 +283,236 @@ namespace PersonalLedger.Data
         };
         #endregion
 
-        public DataRepository(DataContext context, HtmlEncoder htmlEncoder)
+        public DataRepository(LedgerDbContext context, HtmlEncoder htmlEncoder, ILogger<DataRepository> logger, SignInManager<IdentityUser> signInManager)
         {
             _context = context;
             _htmlEncoder = htmlEncoder;
+            _logger = logger;
+            _userName = signInManager.Context.User.Identity.Name;
+            _userSI = signInManager.Context.User.Identity.IsAuthenticated;
+            _userAdmin = signInManager.Context.User.IsInRole("Administrator");
         }  //ctor
 
         #region Accounts
-        public async Task<List<Account>> GetAccountsAsync()
+        public async Task<Account[]> GetAccountsAsync()
         {
-            Debug.WriteLine("DataRepository is getting Accounts.");
-            return await _context.Accounts.Where(x => x.User == _user).ToListAsync()?? new List<Account>();
+            _logger.LogTrace("DataRepository is getting Accounts for user: {0}.", _userName);
+            try
+            {
+                return await _context.Accounts.Where(x => x.User == _userName).ToArrayAsync() ?? new Account[0];
+            }
+            catch (Exception e)
+            {
+                HandleException(e, nameof(GetAccountsAsync), "");
+                return new Account[0];
+            }
         }
 
         public async Task<int> AddAccountAsync(Account a)
         {
-            Debug.WriteLine("DataRepository is adding Account.");
-            _context.Accounts.Add(a);
-            await _context.SaveChangesAsync();
-            return a.ID;
+            _logger.LogTrace("DataRepository is adding Account {0} for user: {1}.", a.Name, _userName);
+            try
+            {
+                _context.Accounts.Add(a);
+                await _context.SaveChangesAsync();
+                return a.ID;
+            }
+            catch (Exception e)
+            {
+                HandleException(e, nameof(AddAccountAsync), "");
+                return -1;
+            }
         }
 
         public async Task<int> DeleteAccountAsync(int id)
         {
-            Debug.WriteLine("DataRepository is deleting Account.");
-            _context.Accounts.Remove(_context.Accounts.Single(x => x.ID == id));
-            await _context.SaveChangesAsync();
-            return 0;
+            _logger.LogTrace("DataRepository is deleting Account {0} for user: {1}.", id, _userName);
+            try
+            {
+                _context.Accounts.Remove(_context.Accounts.Single(x => x.ID == id));
+                await _context.SaveChangesAsync();
+                return 0;
+            }
+            catch (Exception e)
+            {
+                HandleException(e, nameof(DeleteAccountAsync), "");
+                return -1;
+            }
         }
 
         public async Task<int> UpdateAccountAsync(Account a)
         {
-            Debug.WriteLine("DataRepository is updating Account.");
-            Account toUpdate = _context.Accounts.SingleOrDefault(x => x.ID == a.ID);
-            toUpdate = a;
-            await _context.SaveChangesAsync();
-            return 0;
+            _logger.LogTrace("DataRepository is updating Account {0} for user: {1}.", a.Name, _userName);
+            try
+            {
+                Account toUpdate = _context.Accounts.SingleOrDefault(x => x.ID == a.ID);
+                toUpdate = a;
+                await _context.SaveChangesAsync();
+                return 0;
+            }
+            catch (Exception e)
+            {
+                HandleException(e, nameof(UpdateAccountAsync), "");
+                return -1;
+            }
         }
         #endregion
         #region Categories
-        public async Task<List<Category>> GetCategoriesAsync()
+        public async Task<Category[]> GetCategoriesAsync()
         {
-            Debug.WriteLine("DataRepository is getting Categories.");
-            if(_context.Categories.Where(x => x.User == _user).Count() == 0)
+            _logger.LogTrace("DataRepository is getting Categories for user: {0}.", _userName);
+            try
             {
-                Debug.WriteLine("DataRepository is populating default Categories for first use.");
-                List<Category> seedCategories = new List<Category>(_defaultCategories);
-                foreach(Category c in seedCategories)
+                if (_context.Categories.Where(x => x.User == _userName).Count() == 0)
                 {
-                    c.User = _user;  //each user will begin with their own set of default categories
+                    await SeedUserCategoriesAsync();
                 }
-                _context.Categories.AddRange(seedCategories);
-                await _context.SaveChangesAsync();
+                return await _context.Categories.Where(x => x.User == _userName).ToArrayAsync() ?? new Category[0];
             }
-            return await _context.Categories.Where(x => x.User == _user).ToListAsync();
+            catch (Exception e)
+            {
+                HandleException(e, nameof(GetCategoriesAsync), "");
+                return new Category[0];
+            }
         }
 
         public async Task<int> AddCategoryAsync(Category c)
         {
-            Debug.WriteLine("DataRepository is adding Category.");
-            _context.Categories.Add(c);
-            await _context.SaveChangesAsync();
-            return c.ID;
+            _logger.LogTrace("DataRepository is adding Category {0} for user: {1}.", c.Name, _userName);
+            try
+            {
+                _context.Categories.Add(c);
+                await _context.SaveChangesAsync();
+                return c.ID;
+            }
+            catch (Exception e)
+            {
+                HandleException(e, nameof(AddCategoryAsync), "");
+                return -1;
+            }
         }
 
         public async Task<int> DeleteCategoryAsync(int id)
         {
-            Debug.WriteLine("DataRepository is deleting Category.");
-            _context.Categories.Remove(_context.Categories.Single(x => x.ID == id));
-            await _context.SaveChangesAsync();
-            return 0;
+            _logger.LogTrace("DataRepository is deleting Category {0} for user: {1}.", id, _userName);
+            try
+            {
+                _context.Categories.Remove(_context.Categories.Single(x => x.ID == id));
+                await _context.SaveChangesAsync();
+                return 0;
+            }
+            catch (Exception e)
+            {
+                HandleException(e, nameof(DeleteCategoryAsync), "");
+                return -1;
+            }
         }
 
         public async Task<int> UpdateCategoryAsync(Category c)
         {
-            Debug.WriteLine("DataRepository is updating Category.");
-            Category toUpdate = _context.Categories.SingleOrDefault(x => x.ID == c.ID);
-            toUpdate = c;
-            await _context.SaveChangesAsync();
-            return 0;
+            _logger.LogTrace("DataRepository is updating Category {0} for user: {1}.", c.Name, _userName);
+            try
+            {
+                Category toUpdate = _context.Categories.SingleOrDefault(x => x.ID == c.ID);
+                toUpdate = c;
+                await _context.SaveChangesAsync();
+                return 0;
+            }
+            catch (Exception e)
+            {
+                HandleException(e, nameof(UpdateCategoryAsync), "");
+                return -1;
+            }
+        }
+
+        private async Task SeedUserCategoriesAsync()
+        {
+            _logger.LogInformation("DataRepository is populating " + _userName + "'s default Categories for first use.");
+            try
+            {
+                List<Category> seedCategories = new List<Category>(_defaultCategories).OrderByDescending(x => x.Type).ThenBy(x => x.Name).ToList();
+                foreach (Category c in seedCategories)
+                {
+                    c.User = _userName;  //each user will begin with their own set of default categories
+                }
+                _context.Categories.AddRange(seedCategories);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                HandleException(e, nameof(SeedUserCategoriesAsync), "");
+            }
         }
         #endregion
         #region Transactions
-        public async Task<List<Transaction>> GetTransactionsAsync()
+        public async Task<Transaction[]> GetTransactionsAsync()
         {
-            Debug.WriteLine("DataRepository is getting Transactions.");
-            return await _context.Transactions.Where(x => x.User == _user).ToListAsync();
+            _logger.LogTrace("DataRepository is getting Transactions for user: {0}.", _userName);
+            try
+            {
+                return await _context.Transactions.Where(x => x.User == _userName).ToArrayAsync() ?? new Transaction[0];
+            }
+            catch (Exception e)
+            {
+                HandleException(e, nameof(GetTransactionsAsync), "");
+                return new Transaction[0];
+            }
         }
 
         public async Task<int> AddTransactionAsync(Transaction t)
         {
-            Debug.WriteLine("DataRepository is adding Transaction.");
-            _context.Transactions.Add(t);
-            await _context.SaveChangesAsync();
-            return t.ID;
+            _logger.LogTrace("DataRepository is adding Transaction {0}/category {1} for user: {2}.", t.Amount, t.Category, _userName);
+            try
+            {
+                _context.Transactions.Add(t);
+                await _context.SaveChangesAsync();
+                return t.ID;
+            }
+            catch (Exception e)
+            {
+                HandleException(e, nameof(AddTransactionAsync), "");
+                return -1;
+            }
         }
 
         public async Task<int> DeleteTransactionAsync(int id)
         {
-            Debug.WriteLine("DataRepository is deleting Transaction.");
-            _context.Transactions.Remove(_context.Transactions.Single(x => x.ID == id));
-            await _context.SaveChangesAsync();
-            return 0;
+            _logger.LogTrace("DataRepository is deleting Transaction {0} for user: {1}.", id, _userName);
+            try
+            {
+                _context.Transactions.Remove(_context.Transactions.Single(x => x.ID == id));
+                await _context.SaveChangesAsync();
+                return 0;
+            }
+            catch (Exception e)
+            {
+                HandleException(e, nameof(DeleteTransactionAsync), "");
+                return -1;
+            }
         }
 
         public async Task<int> UpdateTransactionAsync(Transaction t)
         {
-            Debug.WriteLine("DataRepository is updating Transaction.");
-            Transaction toUpdate = _context.Transactions.SingleOrDefault(x => x.ID == t.ID);
-            toUpdate = t;
-            await _context.SaveChangesAsync();
-            return 0;
-        }
-        #endregion
-        #region Users
-        public async Task<List<User>> GetUsersAsync()
-        {
-            Debug.WriteLine("DataRepository is getting Users.");
-            return await _context.Users.ToListAsync() ?? new List<User>();
-        }
-
-        public async Task<string> AddUserAsync(User u)
-        {
-            Debug.WriteLine("DataRepository is adding User.");
-            _context.Users.Add(u);
-            await _context.SaveChangesAsync();
-            return u.Id;
-        }
-
-        public async Task<int> DeleteUserAsync(string id)
-        {
-            Debug.WriteLine("DataRepository is deleting User.");
-            _context.Users.Remove(_context.Users.Single(x => x.Id == id));
-            await _context.SaveChangesAsync();
-            return 0;
-        }
-
-        public async Task<int> UpdateUserAsync(User u)
-        {
-            Debug.WriteLine("DataRepository is updating User.");
-            User toUpdate = _context.Users.SingleOrDefault(x => x.Id == u.Id);
-            toUpdate = u;
-            await _context.SaveChangesAsync();
-            return 0;
+            _logger.LogTrace("DataRepository is updating Transaction {0} for user: {1}.", t.ID, _userName);
+            try
+            {
+                Transaction toUpdate = _context.Transactions.SingleOrDefault(x => x.ID == t.ID);
+                toUpdate = t;
+                await _context.SaveChangesAsync();
+                return 0;
+            }
+            catch (Exception e)
+            {
+                HandleException(e, nameof(UpdateTransactionAsync), "");
+                return -1;
+            }
         }
         #endregion
 
         #region Infrastructure
         private void HandleException(Exception e, string method, string userMessage)
         {
-            Debug.WriteLine("An error occurred in DataRepository/" + method + ".\n" + e.Message + ".\n" + userMessage);
-            logger.Error("An error occurred in DataRepository/" + method + ".\n" + e.Message + ".\n" + userMessage);
+            _logger.LogError("{0}: An error occurred in DataRepository/{1} for user: {2}.\n{3}\n{4}", DateTime.Now, method, _userName, e.Message, userMessage);
         }  //HandleException
         #endregion
     }  //repository

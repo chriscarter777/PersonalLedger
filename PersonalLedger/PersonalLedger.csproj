@@ -9,8 +9,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.2" />
-    <PackageReference Include="nlog.config" Version="4.4.12" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,24 +25,39 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="ClientApp\components\Admin.tsx" />
-    <None Remove="ClientApp\components\AdminAccounts.tsx" />
-    <None Remove="ClientApp\components\AdminCategories.tsx" />
-    <None Remove="ClientApp\components\AdminTransactions.tsx" />
-    <None Remove="ClientApp\components\AdminUsers.tsx" />
-    <None Remove="ClientApp\components\Categories.tsx" />
+    <None Remove="ClientApp\components\CategoryAdd.tsx" />
+    <None Remove="ClientApp\components\CategoryEdit.tsx" />
+    <None Remove="ClientApp\components\CategoryItem.tsx" />
+    <None Remove="ClientApp\components\TransactionAdd.tsx" />
+    <None Remove="ClientApp\components\TransactionEdit.tsx" />
+    <None Remove="ClientApp\components\TransactionItem.tsx" />
     <None Remove="ClientApp\store\Accounts.ts" />
     <None Remove="ClientApp\store\Transactions.ts" />
     <None Remove="ClientApp\store\Users.ts" />
   </ItemGroup>
 
   <ItemGroup>
-    <TypeScriptCompile Include="ClientApp\components\Admin.tsx" />
-    <TypeScriptCompile Include="ClientApp\components\AdminAccounts.tsx" />
-    <TypeScriptCompile Include="ClientApp\components\AdminCategories.tsx" />
-    <TypeScriptCompile Include="ClientApp\components\AdminTransactions.tsx" />
-    <TypeScriptCompile Include="ClientApp\components\AdminUsers.tsx" />
+    <Content Include="Views\Shared\403.html" />
+    <Content Include="Views\Shared\404.html" />
+    <Content Include="Views\Shared\500.html" />
+    <Content Include="Views\Shared\Unavailable.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\components\AccountAdd.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\AccountEdit.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\AccountItem.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\AdminHome.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\AdminLayout.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\AdminNav.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\Users.tsx" />
     <TypeScriptCompile Include="ClientApp\components\Categories.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\CategoryAdd.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\CategoryEdit.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\CategoryItem.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\TransactionAdd.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\TransactionEdit.tsx" />
+    <TypeScriptCompile Include="ClientApp\components\TransactionItem.tsx" />
     <TypeScriptCompile Include="ClientApp\store\Accounts.ts" />
     <TypeScriptCompile Include="ClientApp\store\Users.ts" />
     <TypeScriptCompile Include="ClientApp\store\Transactions.ts" />

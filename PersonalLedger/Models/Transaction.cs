@@ -14,6 +14,6 @@ namespace PersonalLedger.Models
         public DateTime Date { get; set; }
         public int DrAcct { get; set; }
         public bool Tax { get; set; }
-        public int User { get; set; }
+        public string User { get; set; }
     }  //class
 }  //namespace

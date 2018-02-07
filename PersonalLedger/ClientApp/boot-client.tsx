@@ -6,12 +6,13 @@ import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 import { createBrowserHistory } from 'history';
-import { Layout } from './components/Layout';
+import { AdminLayout } from './components/AdminLayout';
+import { MainLayout } from './components/MainLayout';
 import configureStore from './configureStore';
 import { ApplicationState }  from './store';
 import * as RoutesModule from './routes';
-let layoutAndRoutes = RoutesModule.layoutAndRoutes;
-let routes = RoutesModule.routes;
+let adminRoutes = RoutesModule.adminRoutes;
+let mainRoutes = RoutesModule.mainRoutes;
 
 // Create browser history to use in the Redux store
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href')!;
@@ -21,26 +22,12 @@ const history = createBrowserHistory({ basename: baseUrl });
 const initialState = (window as any).initialReduxState as ApplicationState;
 const store = configureStore(history, initialState);
 
-// this is the original scaffolded version, which combined layout and routes into one object
-//function renderApp() {
-//    // This code starts up the React app when it runs in a browser.
-//    ReactDOM.render(
-//        <AppContainer>
-//            <Provider store={ store }>
-//                <ConnectedRouter history={history} children={layoutAndRoutes} />
-//            </Provider>
-//        </AppContainer>,
-//        document.getElementById('react-app')
-//    );
-//}
-
 function renderApp() {
-    // This code starts up the React app when it runs in a browser.
     ReactDOM.render(
         <AppContainer>
             <Provider store={store}>
                 <ConnectedRouter history={history}>
-                    <Layout children={routes} />
+                    <MainLayout children={mainRoutes} />
                 </ConnectedRouter>
             </Provider>
         </AppContainer>,
@@ -48,13 +35,30 @@ function renderApp() {
     );
 }
 
-renderApp();
+function renderAdmin() {
+    ReactDOM.render(
+        <AppContainer>
+            <Provider store={store}>
+                <ConnectedRouter history={history}>
+                    <AdminLayout children={adminRoutes} />
+                </ConnectedRouter>
+            </Provider>
+        </AppContainer>,
+        document.getElementById('react-admin')
+    );
+}
+
+if (document.getElementById('react-app')) {
+    renderApp();
+}
+if (document.getElementById('react-admin')) {
+    renderAdmin();
+}
 
 // Allow Hot Module Replacement
 if (module.hot) {
     module.hot.accept('./routes', () => {
-        layoutAndRoutes = require<typeof RoutesModule>('./routes').layoutAndRoutes;
-        routes = require<typeof RoutesModule>('./routes').routes;
+        mainRoutes = require<typeof RoutesModule>('./routes').mainRoutes;
         renderApp();
     });
 }

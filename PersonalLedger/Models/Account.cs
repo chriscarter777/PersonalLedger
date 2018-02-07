@@ -19,6 +19,6 @@ namespace PersonalLedger.Models
         public string Name { get; set; }
         public string Number { get; set; }
         public bool Owned { get; set; }
-        public int User { get; set; }
+        public string User { get; set; }
     }  //class
 }  //namespace

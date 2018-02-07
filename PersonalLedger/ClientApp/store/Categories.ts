@@ -1,4 +1,4 @@
-import { fetch, addTask } from 'domain-task';
+ import { fetch, addTask } from 'domain-task';
 import { Action, Reducer, ActionCreator } from 'redux';
 import { AppThunkAction } from './';
 
@@ -28,7 +28,7 @@ export const actionCreators = {
     requestCategories: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
         // Only load data if it's not already loading
         if (getState().categories.isLoading === false) {
-            let fetchTask = fetch('api/Categories/CategoriesAsync')
+            let fetchTask = fetch('api/Categories/CategoriesAsync', { credentials: 'same-origin' })
                 .then(response => response.json() as Promise<Category[]>)
                 .then(data => {
                     dispatch({ type: 'RECEIVE_CATEGORIES', categories: data });

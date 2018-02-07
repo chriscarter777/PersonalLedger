@@ -1,0 +1,43 @@
+﻿@model PersonalLedger.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+    <h3 class="lemonlime" style="margin:80px 0 50px 0;">Login</h3>
+    <fieldset>
+        <form asp-controller="Access" role="form" asp-action="Login" class="form-horizontal">
+            <div asp-validation-summary="All" class="input-validation-error"></div>
+            <div class="form-group">
+                <label asp-for="UserName" class="col-md-2 control-label"></label>
+                <div class="col-md-9">
+                    <input type="text" asp-for="UserName" class="form-control" />
+                    <span asp-validation-for="UserName" class="field-validation-error"></span>
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="Password" class="col-md-2 control-label"></label>
+                <div class="col-md-9">
+                    <input type="password" asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="field-validation-error"></span>
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <label asp-for="RememberMe" class="col-md-2 control-label"></label>
+                <input type="checkbox" asp-for="RememberMe" />
+                <span asp-validation-for="RememberMe" class="field-validation-error"></span>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-md-offset-2 col-md-1">
+                    <button type="submit" class="btn btn-primary">Log in</button>
+                </div>
+                <div class="col-md-offset-2">
+                    <a asp-action="Register">Register as a new user</a>
+                </div>
+            </div>
+        </form>
+    </fieldset>
+

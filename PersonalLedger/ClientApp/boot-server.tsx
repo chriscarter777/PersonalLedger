@@ -5,8 +5,8 @@ import { StaticRouter } from 'react-router-dom';
 import { replace } from 'react-router-redux';
 import { createMemoryHistory } from 'history';
 import { createServerRenderer, RenderResult } from 'aspnet-prerendering';
-import { Layout } from './components/Layout';
-import { routes } from './routes';
+import { MainLayout } from './components/MainLayout';
+import { mainRoutes } from './routes';
 import configureStore from './configureStore';
 
 export default createServerRenderer(params => {
@@ -24,7 +24,7 @@ export default createServerRenderer(params => {
         const app = (
             <Provider store={ store }>
                 <StaticRouter basename={basename} context={routerContext} location={params.location.path} >
-                    <Layout children={routes} />
+                    <MainLayout children={mainRoutes} />
                 </StaticRouter>
             </Provider>
         );

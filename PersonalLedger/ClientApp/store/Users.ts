@@ -2,11 +2,10 @@
 import { Action, Reducer, ActionCreator } from 'redux';
 import { AppThunkAction } from './';
 
-export interface User {
-    id: number;
-    userName: string;
-    claims: string[];
-    roles: string[];
+interface User {
+    admin: boolean;
+    id: string;
+    userName: string
 }
 
 export interface UserState {
@@ -19,19 +18,18 @@ const unloadedState: UserState = { users: [], isLoading: false };
 interface RequestUsersAction { type: 'REQUEST_USERS' }
 interface ReceiveUsersAction { type: 'RECEIVE_USERS'; users: User[] }
 interface AddUserAction { type: 'ADD_USER'; user: User }
-interface DeleteUserAction { type: 'DELETE_USER'; id: number }
-interface AddClaimAction { type: 'ADD_CLAIM'; id: number; claim: string }
-interface DeleteClaimAction { type: 'DELETE_CLAIM'; id: number; claimId: number }
-interface AddRoleAction { type: 'ADD_ROLE'; id: number; role: string }
-interface DeleteRoleAction { type: 'DELETE_ROLE'; id: number; roleId: number }
+interface DeleteUserAction { type: 'DELETE_USER'; id: string }
+interface ToggleAdminAction { type: 'TOGGLE_ADMIN'; id: string }
+//interface MakeAdminAction { type: 'MAKE_ADMIN'; id: string }
+//interface RemoveAdminAction { type: 'REMOVE_ADMIN'; id: string }
 
-type KnownAction = RequestUsersAction | ReceiveUsersAction | AddUserAction | DeleteUserAction | AddClaimAction | DeleteClaimAction | AddRoleAction | DeleteRoleAction;
+type KnownAction = RequestUsersAction | ReceiveUsersAction | AddUserAction | DeleteUserAction | ToggleAdminAction;
 
 export const actionCreators = {
     requestUsers: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
         // Only load data if it's not already loading
         if (getState().users.isLoading === false) {
-            let fetchTask = fetch('api/Users/UsersAsync')
+            let fetchTask = fetch('api/Users/UsersAsync', { credentials: 'same-origin' })
                 .then(response => response.json() as Promise<User[]>)
                 .then(data => {
                     dispatch({ type: 'RECEIVE_USERS', users: data });
@@ -42,11 +40,10 @@ export const actionCreators = {
         }
     },
     addUser: (user: User) => <AddUserAction>{ type: 'ADD_USER', user: user },
-    deleteUser: (userId: number) => <DeleteUserAction>{ type: 'DELETE_USER',id: userId },
-    addClaim: (userId: number, claim: string) => <AddClaimAction>{ type: 'ADD_CLAIM', id: userId, claim: claim },
-    deleteClaim: (userId: number, claimid: number) => <DeleteClaimAction>{ type: 'DELETE_CLAIM', id: userId, claimId: claimid },
-    addRole: (userId: number, role: string) => <AddRoleAction>{ type: 'ADD_ROLE', id: userId, role: role },
-    deleteRole: (userId: number, roleid: number) => <DeleteRoleAction>{ type: 'DELETE_ROLE', id: userId, roleId: roleid }
+    deleteUser: (userId: string) => <DeleteUserAction>{ type: 'DELETE_USER', id: userId },
+    toggleAdmin: (userId: string) => <ToggleAdminAction>{ type: 'TOGGLE_ADMIN', id: userId },
+    //makeAdmin: (userId: string) => <MakeAdminAction>{ type: 'MAKE_ADMIN', id: userId },
+    //removeAdmin: (userId: string) => <RemoveAdminAction>{ type: 'REMOVE_ADMIN', id: userId },
 };
 
 export const reducer: Reducer<UserState> = (state: UserState, incomingAction: Action) => {
@@ -60,14 +57,12 @@ export const reducer: Reducer<UserState> = (state: UserState, incomingAction: Ac
             return { isLoading: state.isLoading, users: state.users };
         case 'DELETE_USER':
             return { isLoading: state.isLoading, users: state.users };
-        case 'ADD_CLAIM':
+        case 'TOGGLE_ADMIN':
             return { isLoading: state.isLoading, users: state.users };
-        case 'DELETE_CLAIM':
-            return { isLoading: state.isLoading, users: state.users };
-        case 'ADD_ROLE':
-            return { isLoading: state.isLoading, users: state.users };
-        case 'DELETE_ROLE':
-            return { isLoading: state.isLoading, users: state.users };
+        //case 'MAKE_ADMIN':
+        //    return { isLoading: state.isLoading, users: state.users };
+        //case 'REMOVE_ADMIN':
+        //    return { isLoading: state.isLoading, users: state.users };
         default:
             // The following line guarantees that every action has been covered by a case
             const exhaustiveCheck: never = action;

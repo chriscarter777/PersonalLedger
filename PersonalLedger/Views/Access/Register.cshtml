@@ -1,0 +1,55 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity.EntityFrameworkCore
+@using System.Security.Claims;
+@using Microsoft.AspNetCore.Authorization;
+@inject SignInManager<IdentityUser> SignInManager
+
+@model PersonalLedger.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h3 class="lemonlime" style="margin:80px 0 50px 0;">Create a New Account</h3>
+<fieldset>
+    <br />
+    <form asp-controller="Access" asp-action="Register" method="post" class="form-horizontal">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="UserName" class="col-md-2 control-label"></label>
+            <div class="col-md-9">
+                <input type="text" asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <label asp-for="Password" class="col-md-2 control-label"></label>
+            <div class="col-md-9">
+                <input type="password" asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <label asp-for="ConfirmPassword" class="col-md-2 control-label"></label>
+            <div class="col-md-9">
+                <input type="password" asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+        </div>
+        <br />
+        @if (User.HasClaim(c => c.Type == ClaimTypes.Role && c.Value == "Administrator"))
+        {
+            <div class="form-group">
+                <label asp-for="Administrator" class="col-md-2 control-label"></label>
+                <input type="checkbox" asp-for="Administrator" />
+            </div>
+            <br />
+        }
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+        </div>
+    </form>
+</fieldset>

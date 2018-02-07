@@ -1,33 +1,24 @@
- import * as React from 'react';
+import * as React from 'react';
 import { Route } from 'react-router-dom';
-import { Layout } from './components/Layout';
-import Home from './components/Home';
+import MainHome from './components/MainHome';
 import Accounts from './components/Accounts';
-import Admin from './components/Admin';
-import AdminAccounts from './components/AdminAccounts';
-import AdminCategories from './components/AdminCategories';
-import AdminTransactions from './components/AdminTransactions';
-import AdminUsers from './components/AdminUsers';
 import Categories from './components/Categories';
 import Ledger from './components/Ledger';
+import AccountAdd from './components/AccountAdd';
+import AccountEdit from './components/AccountEdit';
 
-export const layoutAndRoutes = <Layout>
-    <Route exact path='/' component={Home} />
+import AdminHome from './components/AdminHome';
+import AdminUsers from './components/Users';
+
+export const mainRoutes = <div>
+    <Route path='/Home/Main' component={MainHome} />
     <Route path='/ledger' component={Ledger} />
     <Route path='/accounts' component={Accounts} />
     <Route path='/categories' component={Categories} />
-    <Route exact path='/admin' component={Admin} />
-</Layout>;
+</div>;
 
-export const routes =<div>
-    <Route exact path='/' component={Home} />
-    <Route path='/ledger' component={Ledger} />
-    <Route path='/accounts' component={Accounts} />
-    <Route path='/categories' component={Categories} />
-    <Route exact path='/admin' component={Admin} />
-    <Route path='/admin/accounts' component={AdminAccounts} />
-    <Route path='/admin/categories' component={AdminCategories} />
-    <Route path='/admin/transactions' component={AdminTransactions} />
+export const adminRoutes = <div>
+    <Route exact path='/admin' component={AdminHome} />
     <Route path='/admin/users' component={AdminUsers} />
 </div>;
 

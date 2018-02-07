@@ -15,31 +15,39 @@ export class Categories extends React.Component<CategoriesProps, {}> {
         this.props.requestCategories();
     }
 
-    componentWillReceiveProps(nextProps: CategoriesProps) {
-        // This method runs when incoming props (e.g., route params) change
-        this.props.requestCategories();
-    }
+    //componentWillReceiveProps(nextProps: CategoriesProps) {
+    //    // This method runs when incoming props (e.g., route params) change
+    //    this.props.requestCategories();
+    //}
 
     public render() {
-        console.log("CategoriesProps: " + JSON.stringify(this.props));
         var greenStyle = { color: 'green' };
-        var categoryItems = this.props.categories.map(function (item) {
-            return (
-                <li>
-                    {item.id} : {item.name} : {item.tax && <span style={greenStyle}>Tax</span>} : {item.type}
-                </li>
-            );
-        });
+        var categoryItems = this.props.categories.map((item) =>
+            <tr key={item.id.toString()}>
+                <td>{item.id}</td>
+                <td>{item.name}</td>
+                <td>&nbsp;{item.tax && <span className='glyphicon glyphicon-copy' style={greenStyle}></span>}</td>
+                <td>{item.type}</td>
+            </tr>
+        );
 
         return <div>
-            <h1 className="captionlike">Categories</h1>
-
-            <ul>
-                {categoryItems}
-            </ul>
-
+            <table>
+                <caption>Categories</caption>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Tax?</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {categoryItems}
+                </tbody>
+            </table>
             <button onClick={() => { this.props.addCategory(this.props.categories[0]) }}>Add</button>
-            <button onClick={() => { this.props.deleteCategory(0) }}>Delete</button>
+            <button onClick={() => { confirm('are you sure you want to delete this category?'); this.props.deleteCategory(0) }}>Delete</button>
             <button onClick={() => { this.props.updateCategory(this.props.categories[0]) }}>Edit</button>
         </div>;
     }
